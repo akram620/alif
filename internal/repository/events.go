@@ -28,7 +28,15 @@ func (r *EventsRepository) CreateEvent(e *models.Event) *errors.ExportableError 
 		INSERT INTO events (order_type, session_id, card, event_date, website_url)
 		VALUES ($1, $2, $3, $4, $5)
 	`
-	_, err := r.pool.Exec(context.Background(), query, e.OrderType, e.SessionID, e.Card, e.EventDate, e.WebsiteURL)
+
+	eventDate, err := time.Parse("2006-01-02 15:04:05.999999 -07:00", e.EventDate)
+	if err != nil {
+		logger.Error(err)
+		return &errors.ErrInternalServerErrorDatabaseFailed
+	}
+	eventDate = eventDate.UTC()
+
+	_, err = r.pool.Exec(context.Background(), query, e.OrderType, e.SessionID, e.Card, eventDate, e.WebsiteURL)
 	if err != nil {
 		return &errors.ErrInternalServerErrorDatabaseFailed
 	}
