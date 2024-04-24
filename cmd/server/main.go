@@ -29,11 +29,11 @@ func main() {
 		logger.Fatalf("migrate.ApplyMigrations(): %v", err)
 	}
 
-	chatRepository := repository.NewEventsRepository(nil)
+	chatRepository := repository.NewEventsRepository(pool)
 
 	chatService := service.NewEventsService(chatRepository)
 
-	server := api.NewServer(*chatService)
+	server := api.NewServer(chatService)
 	server.Run(config.Values.APIPort)
 }
 

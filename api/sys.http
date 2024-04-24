@@ -1,3 +1,15 @@
 ### Health
 
 GET localhost:8084/health
+
+### Create new event
+POST localhost:8084/api/v1/events
+Content-Type: application/json
+
+{
+  "orderType": "Purchase",
+  "sessionId": "29827525-06c9-4b1e-9d9b-7c4584e82f56",
+  "card": "44332431409",
+  "eventDate": "2023-01-04 13:44:52.835626 +00:00",
+  "websiteUrl": "https://amazon.com"
+}
