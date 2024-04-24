@@ -1,0 +1,11 @@
+CREATE TABLE events (
+    id SERIAL PRIMARY KEY,
+    order_type VARCHAR(50) NOT NULL,
+    session_id VARCHAR(30) NOT NULL,
+    card VARCHAR(20) NOT NULL,
+    event_date TIMESTAMP NOT NULL,
+    website_url VARCHAR(100) NOT NULL,
+    sent BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT NULL
+);
