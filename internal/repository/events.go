@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	"github.com/akram620/alif/internal/errors"
-	"github.com/akram620/alif/internal/logger"
 	"github.com/akram620/alif/internal/models"
+	"github.com/akram620/alif/pkg/errors"
+	"github.com/akram620/alif/pkg/logger"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
 )

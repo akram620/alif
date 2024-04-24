@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/akram620/alif/internal/logger"
+	"github.com/akram620/alif/pkg/logger"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )

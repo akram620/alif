@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/akram620/alif/internal/logger"
 	"github.com/akram620/alif/internal/models"
 	"github.com/akram620/alif/internal/repository"
+	"github.com/akram620/alif/pkg/logger"
 	"time"
 )
 

@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/akram620/alif/internal/logger"
 	"github.com/akram620/alif/internal/models"
+	"github.com/akram620/alif/pkg/logger"
 )
 
 type Notification interface {

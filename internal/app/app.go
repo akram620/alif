@@ -7,10 +7,10 @@ import (
 	"github.com/akram620/alif/internal/config"
 	"github.com/akram620/alif/internal/handler"
 	"github.com/akram620/alif/internal/infrastructure/webServer"
-	"github.com/akram620/alif/internal/logger"
-	"github.com/akram620/alif/internal/migrate"
 	"github.com/akram620/alif/internal/repository"
 	"github.com/akram620/alif/internal/service"
+	"github.com/akram620/alif/pkg/logger"
+	"github.com/akram620/alif/pkg/migrate"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"os"
 	"os/signal"
@@ -52,7 +52,7 @@ func Run() {
 	srv := webServer.New()
 	go srv.Run(config.Values.APIPort, handlers)
 
-	awaitQuitSignal(cancel, pool)
+	awaitQuitSignal(cancel, pool, srv)
 }
 
 func connectToDatabase(url string) (*pgxpool.Pool, error) {
@@ -85,12 +85,16 @@ func connectToDatabase(url string) (*pgxpool.Pool, error) {
 	}
 }
 
-func awaitQuitSignal(cancel context.CancelFunc, pool *pgxpool.Pool) {
+func awaitQuitSignal(cancel context.CancelFunc, pool *pgxpool.Pool, srv *webServer.Server) {
 	logger.Infof("Server started. Working until a quit signal is received...")
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
+
 	cancel()
 	pool.Close()
+	_ = srv.Shutdown(context.Background())
+
 	logger.Infof("Stopping server...")
 }
