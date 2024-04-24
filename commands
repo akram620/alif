@@ -1,2 +1,2 @@
 run-psql:
-docker run -d --rm --name psql_alif -p 5432:5432 -e POSTGRES_USER=admin -e POSTGRES_PASSWORD="Dskdhnjl**(0" -e POSTGRES_DB=alif_task -v postgresql_alif_data:/var/lib/postgresql/data postgres:16
+docker run -d --rm --name psql_alif -p 5432:5432 -e POSTGRES_USER=admin -e POSTGRES_PASSWORD="Dskdhnjl**(0" -e POSTGRES_DB=alif_task -v alif_postgresql_alif_data:/var/lib/postgresql/data postgres:16
