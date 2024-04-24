@@ -11,7 +11,14 @@ import (
 	"github.com/akram620/alif/internal/repository"
 	"github.com/akram620/alif/internal/service"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
+)
+
+const (
+	repeatInterval = time.Minute
 )
 
 func main() {
@@ -24,9 +31,8 @@ func main() {
 	if err != nil {
 		logger.Fatalf("connectToDatabase(): %v", err)
 	}
-	defer pool.Close()
 
-	if err := migrate.ApplyMigrations("migrations"); err != nil {
+	if err := migrate.ApplyMigrations("schema"); err != nil {
 		logger.Fatalf("migrate.ApplyMigrations(): %v", err)
 	}
 
@@ -35,12 +41,13 @@ func main() {
 	eventsService := service.NewEventsService(eventsRepository)
 
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 	workerService := service.NewWorkerService(eventsRepository)
-	go workerService.RunJobs(ctx, time.Minute)
+	go workerService.RunJobs(ctx, repeatInterval)
 
 	server := handler.NewHandler(eventsService)
-	server.Run(config.Values.APIPort)
+	go server.Run(config.Values.APIPort)
+
+	awaitQuitSignal(cancel, pool)
 }
 
 func connectToDatabase(url string) (*pgxpool.Pool, error) {
@@ -71,4 +78,14 @@ func connectToDatabase(url string) (*pgxpool.Pool, error) {
 		logger.Infof("successfully connected")
 		return pool, nil
 	}
+}
+
+func awaitQuitSignal(cancel context.CancelFunc, pool *pgxpool.Pool) {
+	logger.Infof("Server started. Working until a quit signal is received...")
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+	cancel()
+	pool.Close()
+	logger.Infof("Stopping server...")
 }

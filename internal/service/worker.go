@@ -21,6 +21,7 @@ func (w *Worker) RunJobs(ctx context.Context, duration time.Duration) {
 	for {
 		select {
 		case <-ctx.Done():
+			logger.Info("🛑 Stopping Worker...")
 			ticker.Stop()
 			return
 		case <-ticker.C:

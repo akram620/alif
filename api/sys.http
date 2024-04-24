@@ -1,5 +1,4 @@
 ### Health
-
 GET localhost:8084/health
 
 ### Create new event
