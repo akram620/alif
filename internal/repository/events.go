@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/akram620/alif/internal/models"
 	"github.com/akram620/alif/pkg/errors"
-	"github.com/akram620/alif/pkg/logger"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
 )
@@ -31,14 +30,13 @@ func (r *EventsRepository) CreateEvent(e *models.Event) *errors.ExportableError 
 
 	eventDate, err := time.Parse("2006-01-02 15:04:05.999999 -07:00", e.EventDate)
 	if err != nil {
-		logger.Error(err)
-		return &errors.ErrInternalServerErrorDatabaseFailed
+		return errors.ErrInternalServerErrorDatabaseFailed.WithMessage(err.Error())
 	}
 	eventDate = eventDate.UTC()
 
 	_, err = r.pool.Exec(context.Background(), query, e.OrderType, e.SessionID, e.Card, eventDate, e.WebsiteURL)
 	if err != nil {
-		return &errors.ErrInternalServerErrorDatabaseFailed
+		return errors.ErrInternalServerErrorDatabaseFailed.WithMessage(err.Error())
 	}
 
 	return nil
@@ -53,8 +51,7 @@ func (r *EventsRepository) GetEvents() (*[]models.Event, *errors.ExportableError
 	`
 	rows, err := r.pool.Query(context.Background(), query)
 	if err != nil {
-		logger.Error(err)
-		return nil, &errors.ErrInternalServerErrorDatabaseFailed
+		return nil, errors.ErrInternalServerErrorDatabaseFailed.WithMessage(err.Error())
 	}
 	defer rows.Close()
 
@@ -64,8 +61,7 @@ func (r *EventsRepository) GetEvents() (*[]models.Event, *errors.ExportableError
 		var evDate time.Time
 		err = rows.Scan(&e.ID, &e.OrderType, &e.SessionID, &e.Card, &evDate, &e.WebsiteURL)
 		if err != nil {
-			logger.Error(err)
-			return nil, &errors.ErrInternalServerErrorDatabaseFailed
+			return nil, errors.ErrInternalServerErrorDatabaseFailed.WithMessage(err.Error())
 		}
 
 		e.EventDate = evDate.Format(time.RFC3339)
@@ -83,8 +79,7 @@ func (r *EventsRepository) MarkEventsAsSent(ids []int64) *errors.ExportableError
 	`
 	_, err := r.pool.Exec(context.Background(), query, ids)
 	if err != nil {
-		logger.Error(err)
-		return &errors.ErrInternalServerErrorDatabaseFailed
+		return errors.ErrInternalServerErrorDatabaseFailed.WithMessage(err.Error())
 	}
 
 	return nil
