@@ -34,7 +34,7 @@ func main() {
 	chatService := service.NewEventsService(chatRepository)
 
 	server := api.NewServer(*chatService)
-	server.Run(config.Values.APIEndpoint)
+	server.Run(config.Values.APIPort)
 }
 
 func connectToDatabase(url string) (*pgxpool.Pool, error) {
@@ -49,8 +49,6 @@ func connectToDatabase(url string) (*pgxpool.Pool, error) {
 	}
 
 	for {
-		logger.Infof("trying to connect to the database: %s", url)
-
 		if retries >= maxRetries {
 			return nil, fmt.Errorf("couldn't connect to the database after %d retries", retries)
 		}

@@ -7,7 +7,7 @@ import (
 )
 
 type values struct {
-	APIEndpoint string `envconfig:"API_ENDPOINT" required:"true"`
+	APIPort     string `envconfig:"API_PORT" required:"true"`
 	DatabaseURL string `envconfig:"DB_URL" required:"true"`
 }
 
