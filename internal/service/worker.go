@@ -38,7 +38,26 @@ func (w *Worker) RunJobs(ctx context.Context, duration time.Duration) {
 }
 
 func (w *Worker) sendNotifications(events *[]models.Event) {
+	success := make([]int64, 0, len(*events))
 	for _, event := range *events {
-		logger.Infof("📨 Sending notification for event: %+v", event)
+		err := w.sendNotification(&event)
+		if err != nil {
+			logger.Error(err)
+			continue
+		}
+
+		success = append(success, event.ID)
 	}
+
+	if len(success) > 0 {
+		err := w.eventsRepository.MarkEventsAsSent(success)
+		if err != nil {
+			logger.Error(err)
+		}
+	}
+}
+
+func (w *Worker) sendNotification(event *models.Event) error {
+	logger.Infof("📨 Sending notification for event: %v", event)
+	return nil
 }

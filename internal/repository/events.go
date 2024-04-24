@@ -12,6 +12,7 @@ import (
 type Events interface {
 	CreateEvent(e *models.Event) *errors.ExportableError
 	GetEvents() (*[]models.Event, *errors.ExportableError)
+	MarkEventsAsSent(ids []int64) *errors.ExportableError
 }
 
 type EventsRepository struct {
@@ -37,7 +38,7 @@ func (r *EventsRepository) CreateEvent(e *models.Event) *errors.ExportableError 
 
 func (r *EventsRepository) GetEvents() (*[]models.Event, *errors.ExportableError) {
 	query := `
-		SELECT order_type, session_id, card, event_date, website_url
+		SELECT id, order_type, session_id, card, event_date, website_url
 		FROM events
 		WHERE deleted_at is null and sent = false and
 			date_trunc('minute', event_date) = date_trunc('minute', CURRENT_TIMESTAMP);
@@ -53,7 +54,7 @@ func (r *EventsRepository) GetEvents() (*[]models.Event, *errors.ExportableError
 	for rows.Next() {
 		var e models.Event
 		var evDate time.Time
-		err = rows.Scan(&e.OrderType, &e.SessionID, &e.Card, &evDate, &e.WebsiteURL)
+		err = rows.Scan(&e.ID, &e.OrderType, &e.SessionID, &e.Card, &evDate, &e.WebsiteURL)
 		if err != nil {
 			logger.Error(err)
 			return nil, &errors.ErrInternalServerErrorDatabaseFailed
@@ -63,4 +64,19 @@ func (r *EventsRepository) GetEvents() (*[]models.Event, *errors.ExportableError
 	}
 
 	return &events, nil
+}
+
+func (r *EventsRepository) MarkEventsAsSent(ids []int64) *errors.ExportableError {
+	query := `
+		UPDATE events
+		SET sent = true
+		WHERE id = ANY($1)
+	`
+	_, err := r.pool.Exec(context.Background(), query, ids)
+	if err != nil {
+		logger.Error(err)
+		return &errors.ErrInternalServerErrorDatabaseFailed
+	}
+
+	return nil
 }
