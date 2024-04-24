@@ -10,10 +10,11 @@ import (
 
 type Worker struct {
 	eventsRepository repository.Events
+	notification     Notification
 }
 
-func NewWorkerService(eventsRepository repository.Events) *Worker {
-	return &Worker{eventsRepository}
+func NewWorkerService(eventsRepository repository.Events, notification Notification) *Worker {
+	return &Worker{eventsRepository, notification}
 }
 
 func (w *Worker) RunJobs(ctx context.Context, duration time.Duration) {
@@ -41,7 +42,7 @@ func (w *Worker) RunJobs(ctx context.Context, duration time.Duration) {
 func (w *Worker) sendNotifications(events *[]models.Event) {
 	success := make([]int64, 0, len(*events))
 	for _, event := range *events {
-		err := w.sendNotification(&event)
+		err := w.notification.SendNotification(&event)
 		if err != nil {
 			logger.Error(err)
 			continue
@@ -56,9 +57,4 @@ func (w *Worker) sendNotifications(events *[]models.Event) {
 			logger.Error(err)
 		}
 	}
-}
-
-func (w *Worker) sendNotification(event *models.Event) error {
-	logger.Infof("📨 Sending notification for event: %v", event)
-	return nil
 }

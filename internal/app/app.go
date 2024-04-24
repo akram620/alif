@@ -42,7 +42,8 @@ func Run() {
 	eventsService := service.NewEventsService(eventsRepository)
 
 	ctx, cancel := context.WithCancel(context.Background())
-	workerService := service.NewWorkerService(eventsRepository)
+	notification := service.NewNotificationService()
+	workerService := service.NewWorkerService(eventsRepository, notification)
 	go workerService.RunJobs(ctx, repeatInterval)
 
 	newHandler := handler.NewHandler(eventsService)

@@ -59,6 +59,7 @@ func (r *EventsRepository) GetEvents() (*[]models.Event, *errors.ExportableError
 			logger.Error(err)
 			return nil, &errors.ErrInternalServerErrorDatabaseFailed
 		}
+
 		e.EventDate = evDate.Format(time.RFC3339)
 		events = append(events, e)
 	}
