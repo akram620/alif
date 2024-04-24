@@ -7,29 +7,28 @@ import (
 )
 
 type Handler struct {
-	engine  *gin.Engine
 	service service.Events
 }
 
 func NewHandler(chatService service.Events) *Handler {
 	return &Handler{
-		gin.New(),
 		chatService,
 	}
 }
 
-func (s *Handler) Run(port string) {
-	s.engine.Use(logger.SetLogger())
-	s.engine.Use(gin.Recovery())
+func (s *Handler) InitRoutes() *gin.Engine {
+	router := gin.New()
+	router.Use(logger.SetLogger())
+	router.Use(gin.Recovery())
 
-	s.engine.GET("/health", s.Health)
+	router.GET("/health", s.Health)
 
-	general := s.engine.Group("/api/v1")
+	general := router.Group("/api/v1")
 
 	events := general.Group("/events")
 	{
 		events.POST("", s.CreateEvent)
 	}
 
-	s.engine.Run(port)
+	return router
 }
