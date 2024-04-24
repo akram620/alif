@@ -1,4 +1,4 @@
-package api
+package handler
 
 import (
 	"github.com/akram620/alif/internal/errors"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (s *Server) CreateEvent(c *gin.Context) {
+func (s *Handler) CreateEvent(c *gin.Context) {
 	var event models.Event
 	if err := c.BindJSON(&event); err != nil {
 		logger.Error("CreateEvent: %v", err)

@@ -1,4 +1,4 @@
-package api
+package handler
 
 import (
 	"github.com/akram620/alif/internal/service"
@@ -6,19 +6,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Server struct {
+type Handler struct {
 	engine  *gin.Engine
 	service service.Events
 }
 
-func NewServer(chatService service.Events) *Server {
-	return &Server{
+func NewHandler(chatService service.Events) *Handler {
+	return &Handler{
 		gin.New(),
 		chatService,
 	}
 }
 
-func (s *Server) Run(endpoint string) {
+func (s *Handler) Run(port string) {
 	s.engine.Use(logger.SetLogger())
 	s.engine.Use(gin.Recovery())
 
@@ -31,5 +31,5 @@ func (s *Server) Run(endpoint string) {
 		events.POST("", s.CreateEvent)
 	}
 
-	s.engine.Run(endpoint)
+	s.engine.Run(port)
 }
