@@ -47,3 +47,16 @@ postgres:16
    ```
    DB_URL="postgres://admin:Dskdhnjl**(0@localhost:5432/alif_task?sslmode=disable"
    ```
+
+---
+Выполните команду:
+```bash
+go mod download
+```
+```bash
+go run cmd/server/main.go
+```
+или 
+```bash
+sh run.sh
+```
