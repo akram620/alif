@@ -6,8 +6,14 @@ import (
 	"github.com/akram620/alif/pkg/errors"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.42.3 --name=Events
+
 type Events interface {
 	CreateEvent(e *models.Event) *errors.ExportableError
+}
+
+func (s *EventsService) CreateEvent(e *models.Event) *errors.ExportableError {
+	return s.eventsRepository.CreateEvent(e)
 }
 
 type EventsService struct {
@@ -16,8 +22,4 @@ type EventsService struct {
 
 func NewEventsService(chatRepository repository.Events) *EventsService {
 	return &EventsService{chatRepository}
-}
-
-func (s *EventsService) CreateEvent(e *models.Event) *errors.ExportableError {
-	return s.eventsRepository.CreateEvent(e)
 }

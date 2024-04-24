@@ -5,17 +5,17 @@ import (
 	"github.com/akram620/alif/pkg/logger"
 )
 
-type Notification interface {
+type Notifier interface {
 	SendNotification(event *models.Event) error
 }
 
-type NotificationService struct{}
+type NotifierService struct{}
 
-func NewNotificationService() *NotificationService {
-	return &NotificationService{}
+func NewNotifierService() *NotifierService {
+	return &NotifierService{}
 }
 
-func (n *NotificationService) SendNotification(event *models.Event) error {
+func (n *NotifierService) SendNotification(event *models.Event) error {
 	logger.Infof("📨 Sending notification for event: %v", event)
 	return nil
 }

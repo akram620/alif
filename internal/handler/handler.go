@@ -10,9 +10,9 @@ type Handler struct {
 	service service.Events
 }
 
-func NewHandler(chatService service.Events) *Handler {
+func NewHandler(service service.Events) *Handler {
 	return &Handler{
-		chatService,
+		service,
 	}
 }
 

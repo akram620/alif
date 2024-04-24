@@ -10,10 +10,10 @@ import (
 
 type Worker struct {
 	eventsRepository repository.Events
-	notification     Notification
+	notification     Notifier
 }
 
-func NewWorkerService(eventsRepository repository.Events, notification Notification) *Worker {
+func NewWorkerService(eventsRepository repository.Events, notification Notifier) *Worker {
 	return &Worker{eventsRepository, notification}
 }
 
