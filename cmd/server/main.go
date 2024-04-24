@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/akram620/alif/internal/api"
 	"github.com/akram620/alif/internal/config"
+	"github.com/akram620/alif/internal/handler"
 	"github.com/akram620/alif/internal/logger"
 	"github.com/akram620/alif/internal/migrate"
 	"github.com/akram620/alif/internal/repository"
@@ -15,6 +15,7 @@ import (
 )
 
 func main() {
+	// загружаем переменные из файла или подтягиваем из процесса (на сервере) , сохраняем в структуре
 	if err := config.LoadFromFile(".env"); err != nil {
 		logger.Fatalf("config.LoadFromFile(): %v", err)
 	}
@@ -29,11 +30,16 @@ func main() {
 		logger.Fatalf("migrate.ApplyMigrations(): %v", err)
 	}
 
-	chatRepository := repository.NewEventsRepository(pool)
+	// инициализируем зависимости
+	eventsRepository := repository.NewEventsRepository(pool)
+	eventsService := service.NewEventsService(eventsRepository)
 
-	chatService := service.NewEventsService(chatRepository)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	workerService := service.NewWorkerService(eventsRepository)
+	go workerService.RunJobs(ctx, time.Minute)
 
-	server := api.NewServer(chatService)
+	server := handler.NewHandler(eventsService)
 	server.Run(config.Values.APIPort)
 }
 

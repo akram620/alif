@@ -6,10 +6,12 @@ import (
 	"github.com/akram620/alif/internal/logger"
 	"github.com/akram620/alif/internal/models"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"time"
 )
 
 type Events interface {
 	CreateEvent(e *models.Event) *errors.ExportableError
+	GetEvents() (*[]models.Event, *errors.ExportableError)
 }
 
 type EventsRepository struct {
@@ -27,9 +29,38 @@ func (r *EventsRepository) CreateEvent(e *models.Event) *errors.ExportableError 
 	`
 	_, err := r.pool.Exec(context.Background(), query, e.OrderType, e.SessionID, e.Card, e.EventDate, e.WebsiteURL)
 	if err != nil {
-		logger.Error("EventsRepository.CreateEvent: %v", err)
 		return &errors.ErrInternalServerErrorDatabaseFailed
 	}
 
 	return nil
+}
+
+func (r *EventsRepository) GetEvents() (*[]models.Event, *errors.ExportableError) {
+	query := `
+		SELECT order_type, session_id, card, event_date, website_url
+		FROM events
+		WHERE deleted_at is null and sent = false and
+			date_trunc('minute', event_date) = date_trunc('minute', CURRENT_TIMESTAMP);
+	`
+	rows, err := r.pool.Query(context.Background(), query)
+	if err != nil {
+		logger.Error(err)
+		return nil, &errors.ErrInternalServerErrorDatabaseFailed
+	}
+	defer rows.Close()
+
+	var events []models.Event
+	for rows.Next() {
+		var e models.Event
+		var evDate time.Time
+		err = rows.Scan(&e.OrderType, &e.SessionID, &e.Card, &evDate, &e.WebsiteURL)
+		if err != nil {
+			logger.Error(err)
+			return nil, &errors.ErrInternalServerErrorDatabaseFailed
+		}
+		e.EventDate = evDate.Format(time.RFC3339)
+		events = append(events, e)
+	}
+
+	return &events, nil
 }
