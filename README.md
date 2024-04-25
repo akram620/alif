@@ -4,7 +4,7 @@
 
 Для запуска проекта через Docker выполните следующие шаги:
 
-1. В файле `.env` в корне проекта укажите переменные окружения:
+1. В файле `.env` укажите переменные окружения:
    ```
    DB_URL="postgres://admin:Dskdhnjl**(0@psql_alif:5432/alif_task?sslmode=disable"
    ```
@@ -21,6 +21,7 @@
 #### Запуск базы данных через Docker
 
 Для запуска базы данных через Docker выполните следующие действия:
+1. Выполните команду:
 ```bash
 docker run -d --rm --name psql_alif \
 -p 5432:5432 \
@@ -31,7 +32,7 @@ docker run -d --rm --name psql_alif \
 postgres:16
 ```
 
-Укажите переменные окружения в файле `.env` в корне проекта:
+2. Укажите переменные окружения в файле `.env`:
    ```
    DB_URL="postgres://admin:Dskdhnjl**(0@localhost:5432/alif_task?sslmode=disable"
    ```
@@ -43,7 +44,7 @@ postgres:16
 1. Установите PostgreSQL.
 2. Создайте базу данных `alif_task`.
 3. Создайте пользователя `admin`.
-4. Укажите переменные окружения в файле `.env` в корне проекта:
+4. Укажите переменные окружения в файле `.env`:
    ```
    DB_URL="postgres://admin:Dskdhnjl**(0@localhost:5432/alif_task?sslmode=disable"
    ```
