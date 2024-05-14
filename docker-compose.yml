@@ -2,9 +2,9 @@ version: '3'
 
 services:
   # Сервис для PostgreSQL
-  psql_alif:
+  work_scheduler_pg:
     image: postgres:16
-    container_name: psql_alif
+    container_name: work_scheduler_pg
     restart: always
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
@@ -13,9 +13,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
-      - postgresql_alif_data:/var/lib/postgresql/data
+      - work_scheduler_data:/var/lib/postgresql/data
 
-  # Сервис для вашего Go приложения
   alif_go_app:
     build: .
     container_name: alif_go_app
@@ -27,5 +26,5 @@ services:
 
 
 volumes:
-  postgresql_alif_data:
+  work_scheduler_data:
     driver: local
